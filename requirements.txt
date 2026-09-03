@@ -9,3 +9,4 @@ python-multipart>=0.0.9
 pydantic>=2.6.0
 streamlit>=1.32.0
 pytest>=8.0.0
+openai>=1.12.0

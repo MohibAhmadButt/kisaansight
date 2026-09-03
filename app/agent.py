@@ -1,3 +1,4 @@
+import os
 import uuid
 import sys
 from pathlib import Path
@@ -30,6 +31,45 @@ except ModuleNotFoundError:
         PAIR_QUESTIONS,
         GENERIC_FALLBACK_QUESTION
     )
+
+# ----------------- ALIBABA CLOUD INFRASTRUCTURE (MODEL STUDIO / QWEN) -----------------
+ALIBABA_CLOUD_API_KEY = os.getenv("ALIBABA_CLOUD_API_KEY", os.getenv("DASHSCOPE_API_KEY", ""))
+ALIBABA_CLOUD_ENDPOINT = "https://dashscope-intl.aliyuncs.com/compatible-mode/v1"
+
+def query_alibaba_cloud_qwen_advisory(crop: str, disease: str, farmer_statement: str) -> str | None:
+    """Queries Alibaba Cloud Model Studio (Qwen-2.5) for clinical agronomic reasoning in Urdu."""
+    if not ALIBABA_CLOUD_API_KEY:
+        return None
+
+    try:
+        from openai import OpenAI
+        client = OpenAI(
+            api_key=ALIBABA_CLOUD_API_KEY,
+            base_url=ALIBABA_CLOUD_ENDPOINT
+        )
+        completion = client.chat.completions.create(
+            model="qwen-plus",
+            messages=[
+                {
+                    "role": "system",
+                    "content": (
+                        "You are an expert clinical agronomist in Pakistan. Provide concise, "
+                        "practical advisory in natural Urdu for smallholder farmers. Avoid generic fluff."
+                    )
+                },
+                {
+                    "role": "user",
+                    "content": f"فصل: {crop}\nتشخیص: {disease}\nکسان کا بیان: {farmer_statement}\nبراہ کرم فوری علاج اور احتیاط لکھیں۔"
+                }
+            ],
+            temperature=0.3,
+            max_tokens=250
+        )
+        return completion.choices[0].message.content
+    except Exception as e:
+        print(f"[Alibaba Cloud Advisory Fallback]: {e}")
+        return None
+
 
 DIAGNOSTIC_SESSIONS = {}
 
@@ -149,10 +189,12 @@ def resolve_farmer_reply(session_id: str, transcription: str) -> dict:
         top_cand = session.get("top_candidate")
         second_cand = session.get("second_candidate")
         severity = session.get("severity_score", 0.0)
+        crop = session.get("crop", "Crop")
     else:
         top_cand = "Tomato___Bacterial_spot"
         second_cand = "Tomato___Early_blight"
         severity = 0.0
+        crop = "Tomato"
 
     candidates = [c for c in [top_cand, second_cand] if c]
     scores = {c: 0 for c in candidates}
@@ -170,10 +212,16 @@ def resolve_farmer_reply(session_id: str, transcription: str) -> dict:
     info = DIAGNOSES.get(best_candidate, DIAGNOSES["Tomato___Bacterial_spot"])
     DIAGNOSTIC_SESSIONS.pop(session_id, None)
 
+    # Optional Cloud Enrichment via Alibaba Cloud Model Studio (Qwen-2.5)
+    remedy = info["remedy"]
+    qwen_advice = query_alibaba_cloud_qwen_advisory(crop, info["urdu_name"], transcription)
+    if qwen_advice:
+        remedy = f"{info['remedy']} (Alibaba Cloud Qwen: {qwen_advice})"
+
     return {
         "resolved_disease": best_candidate,
         "disease_urdu": info["urdu_name"],
-        "remedy_urdu": info["remedy"],
+        "remedy_urdu": remedy,
         "tank_dose": info["tank_dose"],
         "dealer_brand": info["dealer_formulation"],
         "active_ingredient": info["active_ingredient"],
