@@ -1,0 +1,11 @@
+fastapi>=0.110.0
+uvicorn>=0.28.0
+torch>=2.2.0
+torchvision>=0.17.0
+pillow>=10.2.0
+openai-whisper>=20231117
+edge-tts>=6.1.10
+python-multipart>=0.0.9
+pydantic>=2.6.0
+streamlit>=1.32.0
+pytest>=8.0.0

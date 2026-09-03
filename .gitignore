@@ -1,0 +1,25 @@
+# Virtual Environment
+venv/
+env/
+ENV/
+
+# Python Cache
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+
+# Datasets & Temporary Files
+data/
+static/audio/*.wav
+static/audio/*.mp3
+static/heatmaps/*.jpg
+static/prescriptions/*.png
+
+# OS / Editor Files
+.vscode/
+.idea/
+*.DS_Store
+
+# Environment variables
+.env
