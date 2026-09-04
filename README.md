@@ -36,72 +36,72 @@ Rather than treating plant pathology as a conventional multi-class image classif
                                         │
                                         ▼
 ┌───────────────────────────────────────────────────────────────────────────────┐
-│                    Streamlit Frontend — Port 8501                            │
+│                    Streamlit Frontend — Port 8501                             │
 │                                                                               │
-│  • Microclimate Dashboard                    • Knapsack Mixer Metrics        │
-│  • Auto-GPS / District Selection              • Live Leaf Capture            │
-│  • Image Uploader                             • WhatsApp Dealer Order        │
-│  • Voice Clarification Loop                   • Digital Nuskha Card          │
+│  • Microclimate Dashboard                    • Knapsack Mixer Metrics         │
+│  • Auto-GPS / District Selection              • Live Leaf Capture             │
+│  • Image Uploader                             • WhatsApp Dealer Order         │
+│  • Voice Clarification Loop                   • Digital Nuskha Card           │
 └────────────────────────────────────┬──────────────────────────────────────────┘
                                      │
                               REST API / JSON
                                      │
                                      ▼
 ┌───────────────────────────────────────────────────────────────────────────────┐
-│                     FastAPI Backend — Port 8000                              │
+│                     FastAPI Backend — Port 8000                               │
 │                                                                               │
-│  ┌────────────────────────────────────────────────────────────────────────┐  │
-│  │ app/vision.py                                                          │  │
-│  │                                                                        │  │
-│  │ Foliage Ratio Gatekeeper (>6% Leaf Check)                              │  │
-│  │                         │                                              │  │
-│  │                         ▼                                              │  │
-│  │ MobileNetV3 — 14 Foliar Pathology Classes                              │  │
-│  │                         │                                              │  │
-│  │                         ▼                                              │  │
-│  │ Softmax Temperature Scaling (T=1.3) + Grad-CAM                        │  │
-│  └─────────────────────────┬──────────────────────────────────────────────┘  │
+│  ┌────────────────────────────────────────────────────────────────────────┐   │
+│  │ app/vision.py                                                          │   │
+│  │                                                                        │   │
+│  │ Foliage Ratio Gatekeeper (>6% Leaf Check)                              │   │
+│  │                         │                                              │   │
+│  │                         ▼                                              │   │
+│  │ MobileNetV3 — 14 Foliar Pathology Classes                              │   │
+│  │                         │                                              │   │
+│  │                         ▼                                              │   │
+│  │ Softmax Temperature Scaling (T=1.3) + Grad-CAM                         │   │
+│  └─────────────────────────┬──────────────────────────────────────────────┘   │
 │                            │                                                  │
 │                            ▼                                                  │
-│  ┌────────────────────────────────────────────────────────────────────────┐  │
-│  │ app/agent.py                                                           │  │
-│  │                                                                        │  │
-│  │ Margin Evaluator                                                       │  │
-│  │ Confidence <85% OR Margin <20%                                        │  │
-│  │                         │                                              │  │
-│  │              ┌──────────┴──────────┐                                   │  │
-│  │              ▼                     ▼                                   │  │
-│  │       High Confidence         Ambiguous Prediction                     │  │
-│  │              │                     │                                   │  │
-│  │              ▼                     ▼                                   │  │
-│  │       Direct Diagnosis       Pairwise Clarification                    │  │
-│  └────────────────────────────────────┬───────────────────────────────────┘  │
+│  ┌────────────────────────────────────────────────────────────────────────┐   │
+│  │ app/agent.py                                                           │   │
+│  │                                                                        │   │
+│  │ Margin Evaluator                                                       │   │
+│  │ Confidence <85% OR Margin <20%                                         │   │
+│  │                         │                                              │   │
+│  │              ┌──────────┴──────────┐                                   │   │
+│  │              ▼                     ▼                                   │   │
+│  │       High Confidence         Ambiguous Prediction                     │   │
+│  │              │                     │                                   │   │
+│  │              ▼                     ▼                                   │   │
+│  │       Direct Diagnosis       Pairwise Clarification                    │   │
+│  └────────────────────────────────────┬───────────────────────────────────┘   │
 │                                       │                                       │
-│  ┌────────────────────────────────────▼───────────────────────────────────┐  │
-│  │ app/voice.py                                                           │  │
-│  │                                                                        │  │
-│  │ Whisper STT  ◄──────────────────────────────► Edge-TTS                │  │
-│  │                                                                        │  │
-│  │                 Spoken Urdu / Voice Loop                               │  │
-│  └────────────────────────────────────────────────────────────────────────┘  │
+│  ┌────────────────────────────────────▼───────────────────────────────────┐   │
+│  │ app/voice.py                                                           │   │
+│  │                                                                        │   │
+│  │ Whisper STT  ◄──────────────────────────────► Edge-TTS                 │   │
+│  │                                                                        │   │
+│  │                 Spoken Urdu / Voice Loop                               │   │
+│  └────────────────────────────────────────────────────────────────────────┘   │
 │                                                                               │
-│  ┌────────────────────────────────────────────────────────────────────────┐  │
-│  │ app/weather.py                                                         │  │
-│  │                                                                        │  │
-│  │ Open-Meteo → VPD Calculation → Environmental Spore-Risk Engine        │  │
-│  └────────────────────────────────────────────────────────────────────────┘  │
+│  ┌────────────────────────────────────────────────────────────────────────┐   │
+│  │ app/weather.py                                                         │   │
+│  │                                                                        │   │
+│  │ Open-Meteo → VPD Calculation → Environmental Spore-Risk Engine         │   │
+│  └────────────────────────────────────────────────────────────────────────┘   │
 │                                                                               │
-│  ┌────────────────────────────────────────────────────────────────────────┐  │
-│  │ app/agent.py                                                           │  │
-│  │                                                                        │  │
-│  │ Alibaba Cloud Model Studio → Qwen-2.5 Reasoning Tier                  │  │
-│  └────────────────────────────────────────────────────────────────────────┘  │
+│  ┌────────────────────────────────────────────────────────────────────────┐   │
+│  │ app/agent.py                                                           │   │
+│  │                                                                        │   │
+│  │ Alibaba Cloud Model Studio → Qwen-2.5 Reasoning Tier                   │   │
+│  └────────────────────────────────────────────────────────────────────────┘   │
 │                                                                               │
-│  ┌────────────────────────────────────────────────────────────────────────┐  │
-│  │ app/nuskha.py                                                          │  │
-│  │                                                                        │  │
-│  │ Digital Nuskha / Prescription Card Generation                         │  │
-│  └────────────────────────────────────────────────────────────────────────┘  │
+│  ┌────────────────────────────────────────────────────────────────────────┐   │
+│  │ app/nuskha.py                                                          │   │
+│  │                                                                        │   │
+│  │ Digital Nuskha / Prescription Card Generation                          │   │
+│  └────────────────────────────────────────────────────────────────────────┘   │
 └───────────────────────────────────────────────────────────────────────────────┘
 ```
 
